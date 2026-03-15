@@ -28,7 +28,7 @@ function Toggle({
 				checked={checked}
 				defaultChecked={defaultChecked}
 				onCheckedChange={onCheckedChange}
-				className="relative flex h-[22px] w-10 items-center rounded-[11px] bg-border-primary p-[3px] transition-colors data-[checked]:bg-accent-green"
+				className="relative flex h-5.5 w-10 items-center rounded-[11px] bg-border-primary p-[3px] transition-colors data-[checked]:bg-accent-green"
 			>
 				<Switch.Thumb className="block h-4 w-4 rounded-full bg-text-secondary transition-transform data-[checked]:translate-x-[18px] data-[checked]:bg-bg-page" />
 			</Switch.Root>

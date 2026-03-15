@@ -51,13 +51,120 @@ const classes = [
 	.join(" ");
 ```
 
+## Responsive Sizing — No Fixed Pixel Values
+
+- **Never use arbitrary pixel values** for `width`, `height`, `max-width`, `max-height`, `min-width`, or `min-height` (e.g., `w-[240px]`, `h-[360px]`, `max-w-[780px]`).
+- Instead, **use Tailwind's default spacing scale** which is rem-based and scales with the user's font-size preferences. Convert `px` to the Tailwind unit by dividing by 4 (e.g., `780px / 4 = 195` → `max-w-195`).
+- Common conversions:
+
+| Pixel value | Tailwind class | Rem equivalent |
+|---|---|---|
+| `w-[50px]` | `w-12.5` | `3.125rem` |
+| `w-[70px]` | `w-17.5` | `4.375rem` |
+| `w-[100px]` | `w-25` | `6.25rem` |
+| `h-[360px]` | `h-90` | `22.5rem` |
+| `max-w-[780px]` | `max-w-195` | `48.75rem` |
+
+- This rule applies to **dimensional properties only** (width, height, max/min variants). Arbitrary pixel values for `font-size`, `line-height`, `border-radius`, and `padding` are acceptable when no standard Tailwind class matches the design intent (e.g., `text-[13px]`, `leading-[18px]`, `rounded-[11px]`).
+
 ## Variants & Sizes
 
 - Define variant/size options as union types (`type ButtonVariant = "primary" | "secondary"`).
 - Map each variant/size to its Tailwind classes via `Record<Variant, string>` objects — no complex runtime logic, no conditional ternaries.
 - Always set sensible defaults for optional props (e.g., `variant = "primary"`, `size = "default"`).
 
-## File Structure
+## Composition Pattern
+
+When a component renders **multiple distinct sub-elements** (e.g., a card with badge, title, and description), use the **composition pattern** instead of passing content via props. This gives consumers full control over ordering, omitting, or extending sub-elements.
+
+### When to Use Composition
+
+- The component has **3+ visual sub-elements** that a consumer might want to reorder, omit, or extend.
+- Sub-elements are **semantically distinct** (e.g., title vs description vs badge — not just styling variants).
+
+### When NOT to Use Composition
+
+- **Atomic components** with 1–2 elements (Badge, Button, Toggle) — keep them prop-driven.
+- **Self-contained stateful components** where decomposition would break internal logic (CodeEditor).
+- Components where sub-elements are **derived from config**, not content (DiffLine prefix is derived from `type`).
+
+### Namespace Object Export
+
+Export sub-components as a namespace object so consumers use `Component.SubComponent` syntax without importing each piece:
+
+```tsx
+const AnalysisCard = {
+	Root: AnalysisCardRoot,
+	Badge: AnalysisCardBadge,
+	Title: AnalysisCardTitle,
+	Description: AnalysisCardDescription,
+};
+
+export {
+	AnalysisCard,
+	type AnalysisCardRootProps,
+	type AnalysisCardBadgeProps,
+	type AnalysisCardTitleProps,
+	type AnalysisCardDescriptionProps,
+};
+```
+
+### Sub-Component Rules
+
+1. **Root** — Always the outermost container. Accepts `children: React.ReactNode` and `className?: string`.
+2. **Each sub-component** — Accepts `className?: string` so consumers can override styles. Content sub-components accept `children: React.ReactNode`.
+3. **Internal defaults** — Sub-components apply their own base styles (spacing, typography) via the array + `.filter(Boolean).join(" ")` pattern.
+4. **Props for config, children for content** — Sub-components that need configuration (e.g., `severity`) take it as a prop. Rendered text/nodes come through `children`.
+
+### Template — Composed Component
+
+```tsx
+interface CardRootProps {
+	children: React.ReactNode;
+	className?: string;
+}
+
+function CardRoot({ children, className }: CardRootProps) {
+	const classes = ["border border-border-primary p-5", className]
+		.filter(Boolean)
+		.join(" ");
+	return <div className={classes}>{children}</div>;
+}
+
+interface CardTitleProps {
+	children: React.ReactNode;
+	className?: string;
+}
+
+function CardTitle({ children, className }: CardTitleProps) {
+	const classes = ["mb-3 font-mono text-[13px] text-text-primary", className]
+		.filter(Boolean)
+		.join(" ");
+	return <p className={classes}>{children}</p>;
+}
+
+const Card = {
+	Root: CardRoot,
+	Title: CardTitle,
+};
+
+export { Card, type CardRootProps, type CardTitleProps };
+```
+
+### Usage
+
+```tsx
+<Card.Root>
+	<Card.Title>my title</Card.Title>
+</Card.Root>
+```
+
+### Current Composed Components
+
+| Component | Sub-components |
+|---|---|
+| `AnalysisCard` | `Root`, `Badge`, `Title`, `Description` |
+| `CodeBlock` | `Root`, `Header`, `Content` |
 
 - One component per file.
 - File name in kebab-case matching the component name (e.g., `button.tsx` for `Button`).

@@ -208,21 +208,38 @@ export default function ComponentsPage() {
 						{"// severities"}
 					</h3>
 					<div className="flex flex-col gap-4 max-w-lg">
-						<AnalysisCard
-							severity="critical"
-							title="using var instead of const/let"
-							description="the var keyword is function-scoped rather than block-scoped, which can lead to unexpected behavior and bugs. modern javascript uses const for immutable bindings and let for mutable ones."
-						/>
-						<AnalysisCard
-							severity="warning"
-							title="no error handling in async function"
-							description="this async function doesn't have a try/catch block. unhandled promise rejections can crash your application in production."
-						/>
-						<AnalysisCard
-							severity="good"
-							title="clean function naming"
-							description="the function name clearly describes what it does, making the code self-documenting and easier for other developers to understand."
-						/>
+						<AnalysisCard.Root>
+							<AnalysisCard.Badge severity="critical" />
+							<AnalysisCard.Title>
+								using var instead of const/let
+							</AnalysisCard.Title>
+							<AnalysisCard.Description>
+								the var keyword is function-scoped rather than block-scoped,
+								which can lead to unexpected behavior and bugs. modern
+								javascript uses const for immutable bindings and let for mutable
+								ones.
+							</AnalysisCard.Description>
+						</AnalysisCard.Root>
+						<AnalysisCard.Root>
+							<AnalysisCard.Badge severity="warning" />
+							<AnalysisCard.Title>
+								no error handling in async function
+							</AnalysisCard.Title>
+							<AnalysisCard.Description>
+								this async function doesn&apos;t have a try/catch block.
+								unhandled promise rejections can crash your application in
+								production.
+							</AnalysisCard.Description>
+						</AnalysisCard.Root>
+						<AnalysisCard.Root>
+							<AnalysisCard.Badge severity="good" />
+							<AnalysisCard.Title>clean function naming</AnalysisCard.Title>
+							<AnalysisCard.Description>
+								the function name clearly describes what it does, making the
+								code self-documenting and easier for other developers to
+								understand.
+							</AnalysisCard.Description>
+						</AnalysisCard.Root>
 					</div>
 				</div>
 			</section>
@@ -241,11 +258,10 @@ export default function ComponentsPage() {
 						{"// with_filename"}
 					</h3>
 					<div className="max-w-xl">
-						<CodeBlock
-							code={sampleCode}
-							language="javascript"
-							filename="calculate.js"
-						/>
+						<CodeBlock.Root>
+							<CodeBlock.Header filename="calculate.js" />
+							<CodeBlock.Content code={sampleCode} language="javascript" />
+						</CodeBlock.Root>
 					</div>
 				</div>
 
@@ -254,7 +270,10 @@ export default function ComponentsPage() {
 						{"// without_filename"}
 					</h3>
 					<div className="max-w-xl">
-						<CodeBlock code={shortCode} language="javascript" />
+						<CodeBlock.Root>
+							<CodeBlock.Header />
+							<CodeBlock.Content code={shortCode} language="javascript" />
+						</CodeBlock.Root>
 					</div>
 				</div>
 			</section>

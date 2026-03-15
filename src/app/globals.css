@@ -34,3 +34,36 @@
 	--color-syn-property: #98c379;
 	--color-syn-type: #e5c07b;
 }
+
+@layer base {
+	::-webkit-scrollbar {
+		width: 6px;
+		height: 6px;
+	}
+
+	/* remove setas */
+	::-webkit-scrollbar-button {
+		display: none;
+		width: 0;
+		height: 0;
+	}
+
+	::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: rgba(120, 120, 120, 0.3);
+		border-radius: 9999px;
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background: rgba(120, 120, 120, 0.6);
+	}
+
+	/* Firefox */
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: rgba(120, 120, 120, 0.5) transparent;
+	}
+}
