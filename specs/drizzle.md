@@ -2,6 +2,8 @@
 
 Setup do banco de dados para o DevRoast usando Drizzle ORM com PostgreSQL 17 via Docker Compose.
 
+## Status: Implemented
+
 ## Contexto
 
 O DevRoast permite colar um trecho de codigo, que e analisado por IA e recebe uma "roast" com score, analise detalhada, diff de sugestoes e um veredicto. Os piores codigos aparecem no shame leaderboard. Nao ha autenticacao — submissions sao anonimas, rastreadas por session ID.
@@ -420,32 +422,46 @@ const stats = await db
 
 ### 1. Infraestrutura
 
-- [ ] Criar `docker-compose.yml` na raiz do projeto
-- [ ] Criar `.env.local` com `DATABASE_URL`
-- [ ] Adicionar `.env.local` ao `.gitignore` (se nao estiver)
-- [ ] Instalar dependencias: `drizzle-orm`, `postgres`, `drizzle-kit`
+- [x] Criar `docker-compose.yml` na raiz do projeto
+- [x] Criar `.env.local` com `DATABASE_URL`
+- [x] Adicionar `.env.local` ao `.gitignore` (se nao estiver)
+- [x] Instalar dependencias: `drizzle-orm`, `postgres`, `drizzle-kit`
 
 ### 2. Schema
 
-- [ ] Criar `src/db/schema.ts` com enums, tabelas e relations
-- [ ] Criar `src/db/index.ts` com conexao ao banco
-- [ ] Criar `drizzle.config.ts` na raiz
+- [x] Criar `src/db/schema.ts` com enums, tabelas e relations
+- [x] Criar `src/db/index.ts` com conexao ao banco
+- [x] Criar `drizzle.config.ts` na raiz
 
 ### 3. Migrations
 
-- [ ] Rodar `docker compose up -d` pra subir o Postgres
-- [ ] Rodar `pnpm drizzle-kit generate` pra gerar a migration inicial
-- [ ] Rodar `pnpm drizzle-kit migrate` pra aplicar
-- [ ] Verificar com `pnpm drizzle-kit studio` que tudo esta correto
+- [x] Rodar `docker compose up -d` pra subir o Postgres
+- [x] Rodar `pnpm drizzle-kit generate` pra gerar a migration inicial
+- [x] Rodar `pnpm drizzle-kit migrate` pra aplicar
+- [x] Verificar com `pnpm drizzle-kit studio` que tudo esta correto
 
 ### 4. Scripts no package.json
 
-- [ ] Adicionar script `db:generate` → `drizzle-kit generate`
-- [ ] Adicionar script `db:migrate` → `drizzle-kit migrate`
-- [ ] Adicionar script `db:studio` → `drizzle-kit studio`
+- [x] Adicionar script `db:generate` → `drizzle-kit generate`
+- [x] Adicionar script `db:migrate` → `drizzle-kit migrate`
+- [x] Adicionar script `db:studio` → `drizzle-kit studio`
 
 ### 5. Validacao
 
-- [ ] Rodar `pnpm build` — garantir que nao ha erros de TypeScript
-- [ ] Rodar `pnpm check` — garantir que Biome esta satisfeito
-- [ ] Verificar que o schema Drizzle gera SQL compativel com as queries tipicas listadas acima
+- [x] Rodar `pnpm build` — garantir que nao ha erros de TypeScript
+- [x] Rodar `pnpm check` — garantir que Biome esta satisfeito
+- [x] Verificar que o schema Drizzle gera SQL compativel com as queries tipicas listadas acima
+
+---
+
+## Files Modified
+
+| Arquivo | Mudança |
+|---|---|
+| `docker-compose.yml` | Criado — PostgreSQL 17 Alpine com volume persistente |
+| `.env.local` | Criado — `DATABASE_URL` para conexão local |
+| `src/db/schema.ts` | Criado — 4 enums, 4 tabelas, 4 relations, 2 índices |
+| `src/db/index.ts` | Criado — Conexão postgres.js + Drizzle client com schema |
+| `src/db/migrations/` | Gerado — Migration inicial via `drizzle-kit generate` |
+| `drizzle.config.ts` | Criado — Configuração do Drizzle Kit (schema, out, dialect, credentials) |
+| `package.json` | Modificado — Adicionados scripts `db:generate`, `db:migrate`, `db:studio`; dependências `drizzle-orm`, `postgres`, `drizzle-kit` |

@@ -28,3 +28,7 @@ Toda feature deve ter uma spec nesta pasta **antes** da implementação começar
 3. **Código na spec** — inclua snippets completos e prontos para copiar (schema, config, queries).
 4. **Referência ao design** — quando a feature mapeia telas do Pencil, liste as telas e entidades envolvidas.
 5. **Atualize o status** — marque como `Implemented` e preencha "Files Modified" após a conclusão.
+
+## Nota
+
+Esta pasta contém **specs de features**. Convenções de código por módulo estão documentadas em arquivos `AGENTS.md` dentro de cada diretório (`src/db/AGENTS.md`, `src/trpc/AGENTS.md`, `src/components/ui/AGENTS.md`, etc.).

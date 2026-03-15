@@ -166,7 +166,35 @@ export { Card, type CardRootProps, type CardTitleProps };
 | `AnalysisCard` | `Root`, `Badge`, `Title`, `Description` |
 | `CodeBlock` | `Root`, `Header`, `Content` |
 
-- One component per file.
+## Skeleton Components for Suspense
+
+When a component loads data asynchronously (e.g., via `useSuspenseQuery`), export a matching `*Skeleton` component from the **same file**. This skeleton is used as the `<Suspense fallback>` in the parent server component.
+
+```tsx
+export function StatsBar() {
+	// ... uses useSuspenseQuery to load data
+}
+
+export function StatsBarSkeleton() {
+	return (
+		<div className="flex items-center justify-center gap-6">
+			<span className="inline-block h-4 w-36 animate-pulse rounded bg-bg-elevated" />
+		</div>
+	);
+}
+```
+
+### Rules
+
+- Name the skeleton `<ComponentName>Skeleton` (e.g., `StatsBarSkeleton`).
+- Export it as a **named export** alongside the main component — this is the only exception to "one component per file".
+- Match the skeleton's layout dimensions to the real component to prevent layout shift.
+- Use `animate-pulse` with `bg-bg-elevated` for placeholder blocks.
+- The skeleton is a **server component** (no `"use client"`) even though it lives in the same file as a client component — React handles this correctly because the skeleton is only imported and rendered by the server component parent.
+
+## General Rules
+
+- One component per file (exception: skeleton components live alongside their data-loading counterpart).
 - File name in kebab-case matching the component name (e.g., `button.tsx` for `Button`).
 - Place all UI components in `src/components/ui/`.
 

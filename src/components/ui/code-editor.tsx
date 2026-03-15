@@ -15,6 +15,7 @@ import { sql } from "@codemirror/lang-sql";
 import type { Extension } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { tags as t } from "@lezer/highlight";
+import { useMutation } from "@tanstack/react-query";
 import { createTheme } from "@uiw/codemirror-themes";
 import CodeMirror from "@uiw/react-codemirror";
 import hljs from "highlight.js/lib/core";
@@ -31,10 +32,12 @@ import hljsRust from "highlight.js/lib/languages/rust";
 import hljsSql from "highlight.js/lib/languages/sql";
 import hljsTypescript from "highlight.js/lib/languages/typescript";
 import hljsXml from "highlight.js/lib/languages/xml";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
+import { useTRPC } from "@/trpc/client";
 
 /* ------------------------------------------------------------------ */
 /*  highlight.js — language auto-detection                            */
@@ -279,6 +282,16 @@ function CodeEditor({ className }: CodeEditorProps) {
 	const [selectorOpen, setSelectorOpen] = useState(false);
 	const [roastMode, setRoastMode] = useState(true);
 
+	const router = useRouter();
+	const trpc = useTRPC();
+	const submitMutation = useMutation(
+		trpc.roast.submit.mutationOptions({
+			onSuccess: (data) => {
+				router.push(`/roast/${data.submissionId}`);
+			},
+		}),
+	);
+
 	const lineCount = code.split("\n").length;
 	const exceedsLimit = lineCount > MAX_LINES;
 
@@ -369,6 +382,17 @@ function CodeEditor({ className }: CodeEditorProps) {
 	const handleChange = useCallback((value: string) => {
 		setCode(value);
 	}, []);
+
+	/* submit handler -------------------------------------------- */
+
+	function handleSubmit() {
+		submitMutation.mutate({
+			code,
+			language,
+			lineCount,
+			roastMode,
+		});
+	}
 
 	/* classes ---------------------------------------------------- */
 
@@ -486,9 +510,12 @@ function CodeEditor({ className }: CodeEditorProps) {
 				<Button
 					variant="primary"
 					size="default"
-					disabled={code.trim().length === 0 || exceedsLimit}
+					disabled={
+						code.trim().length === 0 || exceedsLimit || submitMutation.isPending
+					}
+					onClick={handleSubmit}
 				>
-					{"$ roast_my_code"}
+					{submitMutation.isPending ? "$ roasting..." : "$ roast_my_code"}
 				</Button>
 			</div>
 		</div>
