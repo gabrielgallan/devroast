@@ -87,6 +87,7 @@ export const roastResults = pgTable(
 		promptTokens: integer("prompt_tokens"),
 		completionTokens: integer("completion_tokens"),
 		latencyMs: integer("latency_ms"),
+		errorMessage: text("error_message"),
 		createdAt: timestamp("created_at", { withTimezone: true })
 			.notNull()
 			.defaultNow(),
