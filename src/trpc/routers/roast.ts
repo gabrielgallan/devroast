@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { asc, eq, or } from "drizzle-orm";
+import { codeToHtml } from "shiki";
 import { z } from "zod/v4";
 import type { db } from "@/db/index";
 import {
@@ -76,6 +77,34 @@ async function scheduleAnalysis(
 	}
 }
 
+function getHighlightLanguage(language: string): string {
+	const languageMap: Record<string, string> = {
+		unknown: "plaintext",
+		markdown: "md",
+	};
+
+	return languageMap[language] ?? language;
+}
+
+async function buildHighlightedCodeHtml(
+	code: string,
+	language: string,
+): Promise<string> {
+	const highlightLanguage = getHighlightLanguage(language);
+
+	try {
+		return await codeToHtml(code, {
+			lang: highlightLanguage,
+			theme: "vesper",
+		});
+	} catch {
+		return await codeToHtml(code, {
+			lang: "plaintext",
+			theme: "vesper",
+		});
+	}
+}
+
 export const roastRouter = createTRPCRouter({
 	getById: baseProcedure
 		.input(z.object({ id: z.uuid() }))
@@ -99,26 +128,45 @@ export const roastRouter = createTRPCRouter({
 			});
 
 			if (!result) {
+				const submission = await ctx.db.query.submissions.findFirst({
+					where: eq(submissions.id, input.id),
+					columns: { id: true },
+				});
+
+				if (submission) {
+					return {
+						status: "pending" as const,
+					};
+				}
+
 				throw new TRPCError({
 					code: "NOT_FOUND",
 					message: "Roast result not found",
 				});
 			}
 
+			const highlightedCodeHtml = await buildHighlightedCodeHtml(
+				result.submission.code,
+				result.submission.language,
+			);
+
 			return {
+				status: "ready" as const,
 				id: result.id,
 				score: result.score,
 				verdict: result.verdict,
 				roastText: result.roastText,
+				errorMessage: result.errorMessage,
 				language: result.submission.language,
 				lineCount: result.submission.lineCount,
 				code: result.submission.code,
+				highlightedCodeHtml,
 				issues: result.issues.map((issue) => ({
 					severity: issue.severity,
 					title: issue.title,
 					description: issue.description,
 				})),
-				diff: result.diffs.map((d) => ({
+				diffs: result.diffs.map((d) => ({
 					type: d.lineType,
 					content: d.content,
 					sortOrder: d.sortOrder,

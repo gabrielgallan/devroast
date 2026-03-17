@@ -1,6 +1,6 @@
 # Code Roasting & Analysis Feature
 
-**Status**: Design (Ready for Implementation)  
+**Status**: Implemented  
 **Date**: 2025-03-16  
 **Owner**: DevRoast Team
 
@@ -9,6 +9,19 @@
 ## Overview
 
 Implementar a feature central do DevRoast: análise de código via IA com suporte a "roast mode" (tom sarcástico). Usuários enviam trechos de código, recebem análise detalhada com score, veredicto, problemas identificados e sugestões de correção.
+
+### Files Modified
+
+| Arquivo | Mudança |
+|---|---|
+| `package.json` | Adicionada dependência `openai` |
+| `src/lib/openai.ts` | Novo cliente OpenAI com `generateRoastAnalysis` e `formatErrorMessage` |
+| `src/db/schema.ts` | Adicionada coluna `errorMessage` em `roast_results` |
+| `src/db/migrations/0001_married_shriek.sql` | Migration para coluna `error_message` |
+| `src/trpc/routers/roast.ts` | Implementado `scheduleAnalysis` + submit assíncrono + `getById` com estado `pending` |
+| `src/components/ui/roast-result-skeleton.tsx` | Novo skeleton da tela de resultado |
+| `src/components/ui/roast-result-display.tsx` | Novo componente client com polling e estados de loading/erro |
+| `src/app/roast/[id]/page.tsx` | Migrada para prefetch/hydration com renderização client-side de resultado |
 
 ### Requisitos Funcionais
 
