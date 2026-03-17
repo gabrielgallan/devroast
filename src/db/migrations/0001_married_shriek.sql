@@ -1,0 +1,1 @@
+ALTER TABLE "roast_results" ADD COLUMN "error_message" text;

@@ -1,0 +1,369 @@
+{
+	"id": "df55d22e-7805-41a9-962e-01cdc732ab66",
+	"prevId": "8b9c7e0f-6f53-423d-b8f9-1e477599f89a",
+	"version": "7",
+	"dialect": "postgresql",
+	"tables": {
+		"public.analysis_issues": {
+			"name": "analysis_issues",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"roast_result_id": {
+					"name": "roast_result_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"severity": {
+					"name": "severity",
+					"type": "issue_severity",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"title": {
+					"name": "title",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"description": {
+					"name": "description",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"sort_order": {
+					"name": "sort_order",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 0
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"analysis_issues_roast_result_id_roast_results_id_fk": {
+					"name": "analysis_issues_roast_result_id_roast_results_id_fk",
+					"tableFrom": "analysis_issues",
+					"tableTo": "roast_results",
+					"columnsFrom": ["roast_result_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.roast_results": {
+			"name": "roast_results",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"submission_id": {
+					"name": "submission_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"score": {
+					"name": "score",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"verdict": {
+					"name": "verdict",
+					"type": "verdict",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"roast_text": {
+					"name": "roast_text",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"model": {
+					"name": "model",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"prompt_tokens": {
+					"name": "prompt_tokens",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"completion_tokens": {
+					"name": "completion_tokens",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"latency_ms": {
+					"name": "latency_ms",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"error_message": {
+					"name": "error_message",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {
+				"idx_roast_results_score": {
+					"name": "idx_roast_results_score",
+					"columns": [
+						{
+							"expression": "score",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				}
+			},
+			"foreignKeys": {
+				"roast_results_submission_id_submissions_id_fk": {
+					"name": "roast_results_submission_id_submissions_id_fk",
+					"tableFrom": "roast_results",
+					"tableTo": "submissions",
+					"columnsFrom": ["submission_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"roast_results_submission_id_unique": {
+					"name": "roast_results_submission_id_unique",
+					"nullsNotDistinct": false,
+					"columns": ["submission_id"]
+				}
+			},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.submissions": {
+			"name": "submissions",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"session_id": {
+					"name": "session_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"code": {
+					"name": "code",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"language": {
+					"name": "language",
+					"type": "language",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "'unknown'"
+				},
+				"line_count": {
+					"name": "line_count",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"roast_mode": {
+					"name": "roast_mode",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {
+				"idx_submissions_session_id": {
+					"name": "idx_submissions_session_id",
+					"columns": [
+						{
+							"expression": "session_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.suggested_diffs": {
+			"name": "suggested_diffs",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"roast_result_id": {
+					"name": "roast_result_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"line_type": {
+					"name": "line_type",
+					"type": "diff_line_type",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"content": {
+					"name": "content",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"sort_order": {
+					"name": "sort_order",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"suggested_diffs_roast_result_id_roast_results_id_fk": {
+					"name": "suggested_diffs_roast_result_id_roast_results_id_fk",
+					"tableFrom": "suggested_diffs",
+					"tableTo": "roast_results",
+					"columnsFrom": ["roast_result_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		}
+	},
+	"enums": {
+		"public.diff_line_type": {
+			"name": "diff_line_type",
+			"schema": "public",
+			"values": ["added", "removed", "context"]
+		},
+		"public.issue_severity": {
+			"name": "issue_severity",
+			"schema": "public",
+			"values": ["critical", "warning", "good"]
+		},
+		"public.language": {
+			"name": "language",
+			"schema": "public",
+			"values": [
+				"javascript",
+				"typescript",
+				"tsx",
+				"python",
+				"rust",
+				"go",
+				"html",
+				"css",
+				"json",
+				"sql",
+				"bash",
+				"c",
+				"cpp",
+				"java",
+				"ruby",
+				"php",
+				"swift",
+				"kotlin",
+				"yaml",
+				"markdown",
+				"unknown"
+			]
+		},
+		"public.verdict": {
+			"name": "verdict",
+			"schema": "public",
+			"values": ["looks_clean", "could_be_better", "needs_serious_help"]
+		}
+	},
+	"schemas": {},
+	"sequences": {},
+	"roles": {},
+	"policies": {},
+	"views": {},
+	"_meta": {
+		"columns": {},
+		"schemas": {},
+		"tables": {}
+	}
+}
